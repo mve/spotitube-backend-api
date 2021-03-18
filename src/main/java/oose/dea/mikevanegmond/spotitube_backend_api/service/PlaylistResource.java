@@ -3,6 +3,7 @@ package oose.dea.mikevanegmond.spotitube_backend_api.service;
 import oose.dea.mikevanegmond.spotitube_backend_api.dao.IPlaylistDAO;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.Playlist;
 import oose.dea.mikevanegmond.spotitube_backend_api.service.dto.LoginDTO;
+import oose.dea.mikevanegmond.spotitube_backend_api.service.dto.PlaylistsDTO;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -21,19 +22,17 @@ public class PlaylistResource {
     }
 
     @GET
-    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getPlaylists(LoginDTO loginRequest) {
+    public Response getPlaylists(@QueryParam("token") String token) {
 
         ArrayList<Playlist> playlists = playlistDAO.getPlaylists();
 
-        System.out.println(playlists);
-
-//        String message = "{\"token\": \"" + newUUID + "\", \"user\": \"" + user.getUsername() + "\"}";
-        String message = "{\"playlists\" : [ { \"id\" : 1, \"name\" : \"Death metal\",\"owner\" : true,\"tracks\": []},],\"length\"  :123445}";
+        PlaylistsDTO playlistsDTO = new PlaylistsDTO();
+        playlistsDTO.setPlaylists(playlists);
+        playlistsDTO.setLength(1);
 
         return Response.status(Response.Status.OK)
-                .entity(message)
+                .entity(playlistsDTO)
                 .build();
     }
 

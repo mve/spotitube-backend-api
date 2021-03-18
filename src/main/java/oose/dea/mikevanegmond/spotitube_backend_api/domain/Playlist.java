@@ -1,9 +1,12 @@
 package oose.dea.mikevanegmond.spotitube_backend_api.domain;
 
+import java.util.ArrayList;
+
 public class Playlist {
     private int id;
     private String name;
-    private int ownerId;
+    private boolean owner;
+    private ArrayList<Track> tracks;
 
     public int getId() {
         return id;
@@ -21,11 +24,19 @@ public class Playlist {
         this.name = name;
     }
 
-    public int getOwnerId() {
-        return ownerId;
+    public boolean isOwner() {
+        return owner;
     }
 
-    public void setOwnerId(int ownerId) {
-        this.ownerId = ownerId;
+    public void setOwner(boolean owner) {
+        this.owner = owner;
+    }
+
+    public ArrayList<Track> getTracks() {
+        return tracks;
+    }
+
+    public void setTracks(ArrayList<Track> tracks) {
+        this.tracks = tracks;
     }
 }

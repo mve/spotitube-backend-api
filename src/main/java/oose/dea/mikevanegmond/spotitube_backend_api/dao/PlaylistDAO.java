@@ -1,6 +1,7 @@
 package oose.dea.mikevanegmond.spotitube_backend_api.dao;
 
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.Playlist;
+import oose.dea.mikevanegmond.spotitube_backend_api.domain.Track;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
@@ -31,7 +32,8 @@ public class PlaylistDAO implements IPlaylistDAO {
                 Playlist playlist = new Playlist();
                 playlist.setId(resultSet.getInt("id"));
                 playlist.setName(resultSet.getString("name"));
-                playlist.setOwnerId(resultSet.getInt("owner_id"));
+                playlist.setOwner(true);
+                playlist.setTracks(new ArrayList<Track>());
 
                 playlists.add(playlist);
             }
