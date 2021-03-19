@@ -2,7 +2,7 @@ package oose.dea.mikevanegmond.spotitube_backend_api.service;
 
 import oose.dea.mikevanegmond.spotitube_backend_api.dao.IPlaylistDAO;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.Playlist;
-import oose.dea.mikevanegmond.spotitube_backend_api.service.dto.LoginDTO;
+import oose.dea.mikevanegmond.spotitube_backend_api.service.dto.CreatePlaylistDTO;
 import oose.dea.mikevanegmond.spotitube_backend_api.service.dto.PlaylistsDTO;
 
 import javax.inject.Inject;
@@ -34,6 +34,28 @@ public class PlaylistResource {
         return Response.status(Response.Status.OK)
                 .entity(playlistsDTO)
                 .build();
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createPlaylist(CreatePlaylistDTO createPlaylistDTO, @QueryParam("token") String token) {
+
+        // TODO get userid by token.
+
+        playlistDAO.createPlaylist(createPlaylistDTO.getName(), 1);
+
+        return getPlaylists(token);
+    }
+
+    @DELETE
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deletePlaylist(@PathParam("id") int id, @QueryParam("token") String token) {
+
+        playlistDAO.delete(id);
+
+        return getPlaylists(token);
     }
 
 }

@@ -6,4 +6,6 @@ import java.util.ArrayList;
 
 public interface IPlaylistDAO {
     ArrayList<Playlist> getPlaylists();
+    void createPlaylist(String name, int owner);
+    void delete(int id);
 }

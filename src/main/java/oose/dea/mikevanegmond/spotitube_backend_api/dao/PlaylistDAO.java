@@ -28,7 +28,7 @@ public class PlaylistDAO implements IPlaylistDAO {
 
             ArrayList<Playlist> playlists = new ArrayList<>();
 
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 Playlist playlist = new Playlist();
                 playlist.setId(resultSet.getInt("id"));
                 playlist.setName(resultSet.getString("name"));
@@ -46,6 +46,40 @@ public class PlaylistDAO implements IPlaylistDAO {
 
         return null;
     }
+
+    @Override
+    public void createPlaylist(String name, int ownerId) {
+
+        String sql = "INSERT INTO playlist (name, owner_id) VALUES (?, ?)";
+
+        try (Connection connection = dataSource.getConnection()) {
+
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, name);
+            statement.setInt(2, ownerId);
+            statement.executeUpdate();
+
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void delete(int id) {
+        // TODO Error handeling inbouwen.
+
+        String sql = "DELETE FROM playlist WHERE id = ?";
+
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
+            statement.executeUpdate();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+    }
+
 
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
