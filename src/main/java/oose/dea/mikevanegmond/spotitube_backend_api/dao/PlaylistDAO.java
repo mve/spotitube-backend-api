@@ -66,6 +66,25 @@ public class PlaylistDAO implements IPlaylistDAO {
     }
 
     @Override
+    public void editPlaylist(String name, int id, int ownerId) {
+
+        String sql = "UPDATE playlist SET name = ? WHERE id = ? AND owner_id = ?";
+
+        try (Connection connection = dataSource.getConnection()) {
+
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, name);
+            statement.setInt(2, id);
+            statement.setInt(3, ownerId);
+            statement.executeUpdate();
+
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+
+    }
+
+    @Override
     public void delete(int id) {
         // TODO Error handeling inbouwen.
 
