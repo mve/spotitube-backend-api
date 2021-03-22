@@ -3,7 +3,7 @@ package oose.dea.mikevanegmond.spotitube_backend_api.service.dto;
 public class EditPlaylistDTO {
     public int id;
     public String name;
-    public int owner;
+    public boolean owner;
 
     public int getId() {
         return id;
@@ -21,11 +21,11 @@ public class EditPlaylistDTO {
         this.name = name;
     }
 
-    public int getOwner() {
+    public boolean isOwner() {
         return owner;
     }
 
-    public void setOwner(int owner) {
+    public void setOwner(boolean owner) {
         this.owner = owner;
     }
 }

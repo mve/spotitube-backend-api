@@ -17,7 +17,7 @@ public class PlaylistDAO implements IPlaylistDAO {
     DataSource dataSource;
 
     @Override
-    public ArrayList<Playlist> getPlaylists() {
+    public ArrayList<Playlist> getPlaylists(int userId) {
 
         String sql = "select * from playlist";
 
@@ -32,7 +32,7 @@ public class PlaylistDAO implements IPlaylistDAO {
                 Playlist playlist = new Playlist();
                 playlist.setId(resultSet.getInt("id"));
                 playlist.setName(resultSet.getString("name"));
-                playlist.setOwner(true);
+                playlist.setOwner(userId == resultSet.getInt("owner_id"));
                 playlist.setTracks(new ArrayList<Track>());
 
                 playlists.add(playlist);
@@ -82,6 +82,30 @@ public class PlaylistDAO implements IPlaylistDAO {
             exception.printStackTrace();
         }
 
+    }
+
+    @Override
+    public int getTotalDuration(ArrayList<Playlist> playlists) {
+        int duration = 0;
+
+        String sql = "SELECT SUM(t.duration) as `duration` FROM track t INNER JOIN playlisttrack pt ON pt.track_id = t.id WHERE pt.playlist_id = ?";
+
+        for (Playlist playlist : playlists) {
+            try (Connection connection = dataSource.getConnection()) {
+                PreparedStatement statement = connection.prepareStatement(sql);
+                statement.setInt(1, playlist.getId());
+                ResultSet result = statement.executeQuery();
+
+                if (result.next()) {
+                    duration += result.getInt("duration");
+                }
+            }
+            catch (SQLException exception) {
+                exception.printStackTrace();
+            }
+        }
+
+        return duration;
     }
 
     @Override
