@@ -8,6 +8,6 @@ public interface ITrackDAO {
     ArrayList<Track> getTracks();
     ArrayList<Track> getTracksFromPlaylist(int playlistId);
     ArrayList<Track> getTracksNotFromPlaylist(int playlistId);
-    void addTrackToPlaylist(int playlistId, int trackId);
+    void addTrackToPlaylist(int playlistId, int trackId, boolean isAvailableOffline);
     void removeTrackFromPlaylist(int playlistId, int trackId, int ownerId);
 }

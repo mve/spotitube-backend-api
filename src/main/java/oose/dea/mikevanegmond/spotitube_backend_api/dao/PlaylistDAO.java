@@ -20,14 +20,14 @@ public class PlaylistDAO implements IPlaylistDAO {
     public ArrayList<Playlist> getPlaylists(int userId) {
 
         String sql = "select * from playlist";
+        ArrayList<Playlist> playlists = new ArrayList<>();
 
         try (Connection connection = dataSource.getConnection()) {
 
             PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet resultSet = statement.executeQuery();
 
-            ArrayList<Playlist> playlists = new ArrayList<>();
-
+            // TODO hoe test je de resultset?
             while (resultSet.next()) {
                 Playlist playlist = new Playlist();
                 playlist.setId(resultSet.getInt("id"));
@@ -37,14 +37,11 @@ public class PlaylistDAO implements IPlaylistDAO {
 
                 playlists.add(playlist);
             }
-
-            return playlists;
-
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
 
-        return null;
+        return playlists;
     }
 
     @Override
@@ -99,8 +96,7 @@ public class PlaylistDAO implements IPlaylistDAO {
                 if (result.next()) {
                     duration += result.getInt("duration");
                 }
-            }
-            catch (SQLException exception) {
+            } catch (SQLException exception) {
                 exception.printStackTrace();
             }
         }
@@ -110,7 +106,6 @@ public class PlaylistDAO implements IPlaylistDAO {
 
     @Override
     public void delete(int id) {
-        // TODO Error handeling inbouwen.
 
         String sql = "DELETE FROM playlist WHERE id = ?";
 

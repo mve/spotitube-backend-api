@@ -32,7 +32,6 @@ public class LoginResource {
 
         if (user == null)
         {
-            // TODO werkt raar op de live server, toont 200 melding maar niet een error melding.
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("Password & Username combination is incorrect.")
                     .build();
@@ -40,7 +39,6 @@ public class LoginResource {
 
         if (!user.getPassword().equals(loginRequest.getPassword()))
         {
-            // TODO werkt raar op de live server, toont 200 melding maar niet een error melding.
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("Password & Username combination is incorrect.")
                     .build();

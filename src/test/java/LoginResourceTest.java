@@ -2,11 +2,8 @@ import oose.dea.mikevanegmond.spotitube_backend_api.dao.IUserDAO;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.User;
 import oose.dea.mikevanegmond.spotitube_backend_api.service.LoginResource;
 import oose.dea.mikevanegmond.spotitube_backend_api.service.dto.LoginDTO;
-import oose.dea.mikevanegmond.spotitube_backend_api.service.dto.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 
 import javax.ws.rs.core.Response;
 
@@ -67,7 +64,7 @@ public class LoginResourceTest {
         Response response = loginResource.login(loginDTO);
 
         // Assert
-        assertEquals(Response.Status.OK, response.getStatusInfo());
+        assertEquals(Response.Status.UNAUTHORIZED, response.getStatusInfo());
         assertEquals("Password & Username combination is incorrect.", response.getEntity());
     }
 
@@ -87,7 +84,7 @@ public class LoginResourceTest {
         Response response = loginResource.login(loginDTO);
 
         // Assert
-        assertEquals(Response.Status.OK, response.getStatusInfo());
+        assertEquals(Response.Status.UNAUTHORIZED, response.getStatusInfo());
         assertEquals("Password & Username combination is incorrect.", response.getEntity());
     }
 }

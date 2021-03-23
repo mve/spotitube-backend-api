@@ -53,6 +53,23 @@ public class PlaylistResource {
                 .build();
     }
 
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getPlaylistsCustomStatus(@QueryParam("token") String token, Response.Status status) {
+
+        User user = userDAO.getUserByToken(token);
+
+        ArrayList<Playlist> playlists = playlistDAO.getPlaylists(user.getId());
+
+        PlaylistsDTO playlistsDTO = new PlaylistsDTO();
+        playlistsDTO.setPlaylists(playlists);
+        playlistsDTO.setLength(playlistDAO.getTotalDuration(playlists));
+
+        return Response.status(status)
+                .entity(playlistsDTO)
+                .build();
+    }
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -60,7 +77,7 @@ public class PlaylistResource {
         User user = userDAO.getUserByToken(token);
         playlistDAO.createPlaylist(createPlaylistDTO.getName(), user.getId());
 
-        return getPlaylists(token);
+        return getPlaylistsCustomStatus(token, Response.Status.CREATED);
     }
 
     @PUT
@@ -71,13 +88,13 @@ public class PlaylistResource {
 
         if (!editPlaylistDTO.isOwner()) {
             // not the owner.
-            return getPlaylists(token);
+            return getPlaylistsCustomStatus(token, Response.Status.FORBIDDEN);
         }
 
         User user = userDAO.getUserByToken(token);
 
         playlistDAO.editPlaylist(editPlaylistDTO.getName(), id, user.getId());
-        return getPlaylists(token);
+        return getPlaylistsCustomStatus(token, Response.Status.OK);
     }
 
     @DELETE
@@ -87,7 +104,7 @@ public class PlaylistResource {
 
         playlistDAO.delete(id);
 
-        return getPlaylists(token);
+        return getPlaylistsCustomStatus(token, Response.Status.OK);
     }
 
     @GET
@@ -110,8 +127,7 @@ public class PlaylistResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response addTrackToPlaylist(@PathParam("id") int id, AddTrackDTO addTrackDTO, @QueryParam("token") String token) {
 
-        // TODO offlineavailable moet bij koppeltabel staan.
-        trackDAO.addTrackToPlaylist(id, addTrackDTO.getId());
+        trackDAO.addTrackToPlaylist(id, addTrackDTO.getId(), addTrackDTO.isOfflineAvailable());
         return getTracksForPlaylist(id, token);
     }
 

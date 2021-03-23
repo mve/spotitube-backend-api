@@ -27,7 +27,7 @@ public class TrackDAO implements ITrackDAO {
     @Override
     public ArrayList<Track> getTracksFromPlaylist(int playlistId) {
 
-        String sql = "SELECT track.* FROM track INNER JOIN playlisttrack ON playlisttrack.track_id = track.id WHERE playlisttrack.playlist_id = ?";
+        String sql = "SELECT tra.*, pt.offline_available FROM track tra INNER JOIN playlisttrack pt ON pt.track_id = tra.id WHERE pt.playlist_id = ?";
 
         try (Connection connection = dataSource.getConnection()) {
 
@@ -47,7 +47,7 @@ public class TrackDAO implements ITrackDAO {
                 track.setPlaycount(resultSet.getInt("playcount"));
                 track.setPublicationDate(resultSet.getString("publication_date"));
                 track.setDescription(resultSet.getString("description"));
-                track.setOfflineAvailable(resultSet.getBoolean("available_offline"));
+                track.setOfflineAvailable(resultSet.getBoolean("offline_available"));
 
                 tracks.add(track);
             }
@@ -64,7 +64,7 @@ public class TrackDAO implements ITrackDAO {
     @Override
     public ArrayList<Track> getTracksNotFromPlaylist(int playlistId) {
 
-        String sql = "SELECT * FROM track WHERE id NOT IN (SELECT track_id FROM playlisttrack WHERE playlist_id = ?);";
+        String sql = "SELECT *, 0 AS `available_offline` FROM track WHERE id NOT IN (SELECT track_id FROM playlisttrack WHERE playlist_id = ?);";
 
         try (Connection connection = dataSource.getConnection()) {
 
@@ -99,13 +99,14 @@ public class TrackDAO implements ITrackDAO {
     }
 
     @Override
-    public void addTrackToPlaylist(int playlistId, int trackId) {
-        String sql = "INSERT INTO playlisttrack (track_id, playlist_id) VALUES (?, ?)";
+    public void addTrackToPlaylist(int playlistId, int trackId, boolean isAvailableOffline) {
+        String sql = "INSERT INTO playlisttrack (track_id, playlist_id, offline_available) VALUES (?, ?, ?)";
 
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, trackId);
             statement.setInt(2, playlistId);
+            statement.setBoolean(3, isAvailableOffline);
 
 
             statement.executeUpdate();

@@ -28,7 +28,7 @@ public class TrackResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getPlaylists(@QueryParam("token") String token, @QueryParam("forPlaylist") int forPlaylist) {
+    public Response getTracksNotFromPlaylist(@QueryParam("token") String token, @QueryParam("forPlaylist") int forPlaylist) {
 
         ArrayList<Track> tracks = trackDAO.getTracksNotFromPlaylist(forPlaylist);
 

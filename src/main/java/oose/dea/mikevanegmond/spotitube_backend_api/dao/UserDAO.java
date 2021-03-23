@@ -14,30 +14,30 @@ public class UserDAO implements IUserDAO {
     @Resource(name = "jdbc/spotitube")
     DataSource dataSource;
 
-    public User getUserById(int id) {
-
-        String sql = "select * from user where id = ?";
-
-        try (Connection connection = dataSource.getConnection()) {
-
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, id);
-            ResultSet resultSet = statement.executeQuery();
-
-            while (resultSet.next()) {
-                User user = new User(resultSet.getInt("id"));
-                user.setUsername(resultSet.getString("username"));
-                user.setPassword(resultSet.getString("password"));
-                user.setToken(resultSet.getString("token"));
-
-                return user;
-            }
-        } catch (SQLException exception) {
-            exception.printStackTrace();
-        }
-
-        return null;
-    }
+//    public User getUserById(int id) {
+//
+//        String sql = "select * from user where id = ?";
+//
+//        try (Connection connection = dataSource.getConnection()) {
+//
+//            PreparedStatement statement = connection.prepareStatement(sql);
+//            statement.setInt(1, id);
+//            ResultSet resultSet = statement.executeQuery();
+//
+//            while (resultSet.next()) {
+//                User user = new User(resultSet.getInt("id"));
+//                user.setUsername(resultSet.getString("username"));
+//                user.setPassword(resultSet.getString("password"));
+//                user.setToken(resultSet.getString("token"));
+//
+//                return user;
+//            }
+//        } catch (SQLException exception) {
+//            exception.printStackTrace();
+//        }
+//
+//        return null;
+//    }
 
     public User getUserByUsername(String username) {
 
