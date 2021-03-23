@@ -2,6 +2,7 @@ import oose.dea.mikevanegmond.spotitube_backend_api.dao.IPlaylistDAO;
 import oose.dea.mikevanegmond.spotitube_backend_api.dao.IUserDAO;
 import oose.dea.mikevanegmond.spotitube_backend_api.dao.PlaylistDAO;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.Playlist;
+import oose.dea.mikevanegmond.spotitube_backend_api.domain.Track;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.User;
 import oose.dea.mikevanegmond.spotitube_backend_api.service.PlaylistResource;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +25,16 @@ public class PlaylistDAOTest {
     @BeforeEach
     public void setup() {
         playlistDAO = new PlaylistDAO();
+    }
+
+    public Playlist getFakePlaylist() {
+        Playlist playlist = new Playlist();
+        playlist.setId(0);
+        playlist.setName("name");
+        playlist.setOwner(false);
+        playlist.setTracks(new ArrayList<Track>());
+
+        return playlist;
     }
 
     @Test
@@ -89,8 +100,8 @@ public class PlaylistDAOTest {
 
             // Assert
             verify(connection).prepareStatement(expectedSQL);
-            verify(preparedStatement).setString(1,playlistName);
-            verify(preparedStatement).setInt(2,ownerId);
+            verify(preparedStatement).setString(1, playlistName);
+            verify(preparedStatement).setInt(2, ownerId);
             // TODO wat moet ik asserten in een void methode?
 
         } catch (Exception e) {
@@ -99,11 +110,13 @@ public class PlaylistDAOTest {
     }
 
     @Test
-    public void geditPlaylistTest() {
+    public void editPlaylistTest() {
         try {
             // Arrange
-            String expectedSQL = "select * from playlist";
-            int idToTest = 1;
+            String expectedSQL = "UPDATE playlist SET name = ? WHERE id = ? AND owner_id = ?";
+            String playlistName = "Playlist name";
+            int playlistId = 1;
+            int ownerId = 1;
 
             // setup Mocks
             DataSource dataSource = mock(DataSource.class);
@@ -121,12 +134,13 @@ public class PlaylistDAOTest {
             playlistDAO.setDataSource(dataSource);
 
             // Act
-            ArrayList<Playlist> playlists = playlistDAO.getPlaylists(1);
+            playlistDAO.editPlaylist(playlistName, playlistId, ownerId);
 
             // Assert
             verify(connection).prepareStatement(expectedSQL);
-
-            assertEquals(playlists, new ArrayList<Playlist>());
+            verify(preparedStatement).setString(1, playlistName);
+            verify(preparedStatement).setInt(2, playlistId);
+            verify(preparedStatement).setInt(3, ownerId);
 
         } catch (Exception e) {
             fail();
@@ -137,8 +151,10 @@ public class PlaylistDAOTest {
     public void getTotalDurationTest() {
         try {
             // Arrange
-            String expectedSQL = "select * from playlist";
-            int idToTest = 1;
+            String expectedSQL = "SELECT SUM(t.duration) as `duration` FROM track t INNER JOIN playlisttrack pt ON pt.track_id = t.id WHERE pt.playlist_id = ?";
+            int playlistId = 0;
+            ArrayList<Playlist> playlists = new ArrayList<>();
+            playlists.add(getFakePlaylist());
 
             // setup Mocks
             DataSource dataSource = mock(DataSource.class);
@@ -156,12 +172,11 @@ public class PlaylistDAOTest {
             playlistDAO.setDataSource(dataSource);
 
             // Act
-            ArrayList<Playlist> playlists = playlistDAO.getPlaylists(1);
+            playlistDAO.getTotalDuration(playlists);
 
             // Assert
             verify(connection).prepareStatement(expectedSQL);
-
-            assertEquals(playlists, new ArrayList<Playlist>());
+            verify(preparedStatement).setInt(1, playlistId);
 
         } catch (Exception e) {
             fail();
@@ -172,8 +187,8 @@ public class PlaylistDAOTest {
     public void deleteTest() {
         try {
             // Arrange
-            String expectedSQL = "select * from playlist";
-            int idToTest = 1;
+            String expectedSQL = "DELETE FROM playlist WHERE id = ?";
+            int playlistId = 1;
 
             // setup Mocks
             DataSource dataSource = mock(DataSource.class);
@@ -191,12 +206,11 @@ public class PlaylistDAOTest {
             playlistDAO.setDataSource(dataSource);
 
             // Act
-            ArrayList<Playlist> playlists = playlistDAO.getPlaylists(1);
+            playlistDAO.delete(playlistId);
 
             // Assert
             verify(connection).prepareStatement(expectedSQL);
-
-            assertEquals(playlists, new ArrayList<Playlist>());
+            verify(preparedStatement).setInt(1, playlistId);
 
         } catch (Exception e) {
             fail();
