@@ -4,7 +4,7 @@ import oose.dea.mikevanegmond.spotitube_backend_api.dao.ITrackDAO;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.Playlist;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.Track;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.User;
-import oose.dea.mikevanegmond.spotitube_backend_api.resource.TrackResource;
+import oose.dea.mikevanegmond.spotitube_backend_api.service.TrackResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

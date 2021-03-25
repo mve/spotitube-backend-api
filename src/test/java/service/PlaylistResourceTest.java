@@ -7,7 +7,7 @@ import oose.dea.mikevanegmond.spotitube_backend_api.domain.Playlist;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.Track;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.User;
 import oose.dea.mikevanegmond.spotitube_backend_api.exceptions.InvalidTokenException;
-import oose.dea.mikevanegmond.spotitube_backend_api.resource.PlaylistResource;
+import oose.dea.mikevanegmond.spotitube_backend_api.service.PlaylistResource;
 import oose.dea.mikevanegmond.spotitube_backend_api.dto.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package oose.dea.mikevanegmond.spotitube_backend_api.resource;
+package oose.dea.mikevanegmond.spotitube_backend_api.service;
 
 import oose.dea.mikevanegmond.spotitube_backend_api.dao.IPlaylistDAO;
 import oose.dea.mikevanegmond.spotitube_backend_api.dao.ITrackDAO;
