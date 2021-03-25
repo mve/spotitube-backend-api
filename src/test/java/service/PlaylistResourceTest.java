@@ -6,7 +6,8 @@ import oose.dea.mikevanegmond.spotitube_backend_api.dao.IUserDAO;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.Playlist;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.Track;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.User;
-import oose.dea.mikevanegmond.spotitube_backend_api.service.PlaylistResource;
+import oose.dea.mikevanegmond.spotitube_backend_api.exceptions.InvalidTokenException;
+import oose.dea.mikevanegmond.spotitube_backend_api.resource.PlaylistResource;
 import oose.dea.mikevanegmond.spotitube_backend_api.dto.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,7 +62,7 @@ public class PlaylistResourceTest {
     }
 
     @Test
-    public void getPlaylistsTest() {
+    public void getPlaylistsTest() throws InvalidTokenException {
         // Arrange
         String token = "123";
         ArrayList<Playlist> playlists = new ArrayList<>();
@@ -85,7 +86,79 @@ public class PlaylistResourceTest {
     }
 
     @Test
-    public void createPlaylistTest() {
+    public void getPlaylistsExceptionTest() throws InvalidTokenException {
+        // Arrange
+        String token = "123";
+        ArrayList<Playlist> playlists = new ArrayList<>();
+        playlists.add(getFakePlaylist());
+
+        IUserDAO userDAOMock = mock(IUserDAO.class);
+        IPlaylistDAO playlistDAOMock = mock(IPlaylistDAO.class);
+
+        this.playlistResource.setIUserDAO(userDAOMock);
+        this.playlistResource.setIPlaylistDAO(playlistDAOMock);
+
+        when(userDAOMock.getUserByToken(token)).thenThrow(new InvalidTokenException());
+        when(playlistDAOMock.getPlaylists(user.getId())).thenReturn(playlists);
+        when(playlistDAOMock.getTotalDuration(playlists)).thenReturn(1);
+
+        // Act
+        Response response = playlistResource.getPlaylists(token);
+
+        // Assert
+        assertEquals(Response.Status.FORBIDDEN, response.getStatusInfo());
+    }
+
+    @Test
+    public void getPlaylistsCustomStatusTest() throws InvalidTokenException {
+        // Arrange
+        String token = "123";
+        ArrayList<Playlist> playlists = new ArrayList<>();
+        playlists.add(getFakePlaylist());
+
+        IUserDAO userDAOMock = mock(IUserDAO.class);
+        IPlaylistDAO playlistDAOMock = mock(IPlaylistDAO.class);
+
+        this.playlistResource.setIUserDAO(userDAOMock);
+        this.playlistResource.setIPlaylistDAO(playlistDAOMock);
+
+        when(userDAOMock.getUserByToken(token)).thenReturn(user);
+        when(playlistDAOMock.getPlaylists(user.getId())).thenReturn(playlists);
+        when(playlistDAOMock.getTotalDuration(playlists)).thenReturn(1);
+
+        // Act
+        Response response = playlistResource.getPlaylistsCustomStatus(token, Response.Status.OK);
+
+        // Assert
+        assertEquals(Response.Status.OK, response.getStatusInfo());
+    }
+
+    @Test
+    public void getPlaylistsCustomStatusExceptionTest() throws InvalidTokenException {
+        // Arrange
+        String token = "123";
+        ArrayList<Playlist> playlists = new ArrayList<>();
+        playlists.add(getFakePlaylist());
+
+        IUserDAO userDAOMock = mock(IUserDAO.class);
+        IPlaylistDAO playlistDAOMock = mock(IPlaylistDAO.class);
+
+        this.playlistResource.setIUserDAO(userDAOMock);
+        this.playlistResource.setIPlaylistDAO(playlistDAOMock);
+
+        when(userDAOMock.getUserByToken(token)).thenThrow(new InvalidTokenException());
+        when(playlistDAOMock.getPlaylists(user.getId())).thenReturn(playlists);
+        when(playlistDAOMock.getTotalDuration(playlists)).thenReturn(1);
+
+        // Act
+        Response response = playlistResource.getPlaylistsCustomStatus(token, Response.Status.OK);
+
+        // Assert
+        assertEquals(Response.Status.FORBIDDEN, response.getStatusInfo());
+    }
+
+    @Test
+    public void createPlaylistTest() throws InvalidTokenException {
         // Arrange
         String token = "123";
         CreatePlaylistDTO createPlaylistDTO = new CreatePlaylistDTO();
@@ -109,7 +182,31 @@ public class PlaylistResourceTest {
     }
 
     @Test
-    public void editPlaylistTest() {
+    public void createPlaylistExceptionTest() throws InvalidTokenException {
+        // Arrange
+        String token = "123";
+        CreatePlaylistDTO createPlaylistDTO = new CreatePlaylistDTO();
+        createPlaylistDTO.setId(0);
+        createPlaylistDTO.setName("Name");
+        createPlaylistDTO.setOwner(true);
+
+        IUserDAO userDAOMock = mock(IUserDAO.class);
+        IPlaylistDAO playlistDAOMock = mock(IPlaylistDAO.class);
+
+        this.playlistResource.setIUserDAO(userDAOMock);
+        this.playlistResource.setIPlaylistDAO(playlistDAOMock);
+
+        when(userDAOMock.getUserByToken(token)).thenThrow(new InvalidTokenException());
+
+        // Act
+        Response response = playlistResource.createPlaylist(createPlaylistDTO, token);
+
+        // Assert
+        assertEquals(Response.Status.FORBIDDEN, response.getStatusInfo());
+    }
+
+    @Test
+    public void editPlaylistTest() throws InvalidTokenException {
         // Arrange
         String token = "123";
         EditPlaylistDTO editPlaylistDTO = new EditPlaylistDTO();
@@ -133,7 +230,31 @@ public class PlaylistResourceTest {
     }
 
     @Test
-    public void editPlaylistNotOwnerTest() {
+    public void editPlaylistExceptionTest() throws InvalidTokenException {
+        // Arrange
+        String token = "123";
+        EditPlaylistDTO editPlaylistDTO = new EditPlaylistDTO();
+        editPlaylistDTO.setId(0);
+        editPlaylistDTO.setName("Name");
+        editPlaylistDTO.setOwner(true);
+
+        IUserDAO userDAOMock = mock(IUserDAO.class);
+        IPlaylistDAO playlistDAOMock = mock(IPlaylistDAO.class);
+
+        this.playlistResource.setIUserDAO(userDAOMock);
+        this.playlistResource.setIPlaylistDAO(playlistDAOMock);
+
+        when(userDAOMock.getUserByToken(token)).thenThrow(new InvalidTokenException());
+
+        // Act
+        Response response = playlistResource.editPlaylist(1, editPlaylistDTO, token);
+
+        // Assert
+        assertEquals(Response.Status.FORBIDDEN, response.getStatusInfo());
+    }
+
+    @Test
+    public void editPlaylistNotOwnerTest() throws InvalidTokenException {
         // Arrange
         String token = "123";
         EditPlaylistDTO editPlaylistDTO = new EditPlaylistDTO();
@@ -157,7 +278,7 @@ public class PlaylistResourceTest {
     }
 
     @Test
-    public void deletePlaylistTest() {
+    public void deletePlaylistTest() throws InvalidTokenException {
         // Arrange
         String token = "123";
 
@@ -177,7 +298,27 @@ public class PlaylistResourceTest {
     }
 
     @Test
-    public void getTracksForPlaylistTest() {
+    public void deletePlaylistExceptionTest() throws InvalidTokenException {
+        // Arrange
+        String token = "123";
+
+        IUserDAO userDAOMock = mock(IUserDAO.class);
+        IPlaylistDAO playlistDAOMock = mock(IPlaylistDAO.class);
+
+        this.playlistResource.setIUserDAO(userDAOMock);
+        this.playlistResource.setIPlaylistDAO(playlistDAOMock);
+
+        when(userDAOMock.getUserByToken(token)).thenThrow(new InvalidTokenException());
+
+        // Act
+        Response response = playlistResource.deletePlaylist(1, token);
+
+        // Assert
+        assertEquals(Response.Status.FORBIDDEN, response.getStatusInfo());
+    }
+
+    @Test
+    public void getTracksForPlaylistTest() throws InvalidTokenException {
         // Arrange
         String token = "123";
         int playlistId = 1;
@@ -202,7 +343,7 @@ public class PlaylistResourceTest {
     }
 
     @Test
-    public void addTrackToPlaylistTest() {
+    public void addTrackToPlaylistTest() throws InvalidTokenException {
         // Arrange
         String token = "123";
         int playlistId = 1;
@@ -236,7 +377,7 @@ public class PlaylistResourceTest {
     }
 
     @Test
-    public void removeTrackFromPlaylist() {
+    public void removeTrackFromPlaylistTest() throws InvalidTokenException {
         // Arrange
         String token = "123";
         int playlistId = 1;
@@ -259,5 +400,31 @@ public class PlaylistResourceTest {
 
         // Assert
         assertEquals(Response.Status.OK, response.getStatusInfo());
+    }
+
+    @Test
+    public void removeTrackFromPlaylistExceptionTest() throws InvalidTokenException {
+        // Arrange
+        String token = "123";
+        int playlistId = 1;
+        int trackId = 1;
+        ArrayList<Track> tracks = new ArrayList<Track>();
+        tracks.add(getFakeTrack());
+
+        IUserDAO userDAOMock = mock(IUserDAO.class);
+        IPlaylistDAO playlistDAOMock = mock(IPlaylistDAO.class);
+        ITrackDAO trackDAOMock = mock(ITrackDAO.class);
+
+        this.playlistResource.setIUserDAO(userDAOMock);
+        this.playlistResource.setIPlaylistDAO(playlistDAOMock);
+        this.playlistResource.setITrackDAO(trackDAOMock);
+
+        when(userDAOMock.getUserByToken(token)).thenThrow(new InvalidTokenException());
+
+        // Act
+        Response response = playlistResource.removeTrackFromPlaylist(playlistId, trackId, token);
+
+        // Assert
+        assertEquals(Response.Status.FORBIDDEN, response.getStatusInfo());
     }
 }

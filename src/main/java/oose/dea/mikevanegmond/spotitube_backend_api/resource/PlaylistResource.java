@@ -1,4 +1,4 @@
-package oose.dea.mikevanegmond.spotitube_backend_api.service;
+package oose.dea.mikevanegmond.spotitube_backend_api.resource;
 
 import oose.dea.mikevanegmond.spotitube_backend_api.dao.IPlaylistDAO;
 import oose.dea.mikevanegmond.spotitube_backend_api.dao.ITrackDAO;
@@ -7,6 +7,7 @@ import oose.dea.mikevanegmond.spotitube_backend_api.domain.Playlist;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.Track;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.User;
 import oose.dea.mikevanegmond.spotitube_backend_api.dto.*;
+import oose.dea.mikevanegmond.spotitube_backend_api.exceptions.InvalidTokenException;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -38,28 +39,36 @@ public class PlaylistResource {
 
     /**
      * Get user by token then return all playlists.
+     *
      * @param token
      * @return PlaylistsDTO
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getPlaylists(@QueryParam("token") String token) {
+        try {
+            User user = userDAO.getUserByToken(token);
 
-        User user = userDAO.getUserByToken(token);
+            ArrayList<Playlist> playlists = playlistDAO.getPlaylists(user.getId());
 
-        ArrayList<Playlist> playlists = playlistDAO.getPlaylists(user.getId());
+            PlaylistsDTO playlistsDTO = new PlaylistsDTO();
+            playlistsDTO.setPlaylists(playlists);
+            playlistsDTO.setLength(playlistDAO.getTotalDuration(playlists));
 
-        PlaylistsDTO playlistsDTO = new PlaylistsDTO();
-        playlistsDTO.setPlaylists(playlists);
-        playlistsDTO.setLength(playlistDAO.getTotalDuration(playlists));
+            return Response.status(Response.Status.OK)
+                    .entity(playlistsDTO)
+                    .build();
 
-        return Response.status(Response.Status.OK)
-                .entity(playlistsDTO)
-                .build();
+        } catch (InvalidTokenException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+
     }
 
     /**
      * Get all playlists but allows for a custom response status. Useful to send correct status after playlist creation for example.
+     *
      * @param token
      * @param status
      * @return Response with laylistsDTO
@@ -67,22 +76,28 @@ public class PlaylistResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getPlaylistsCustomStatus(@QueryParam("token") String token, Response.Status status) {
+        try {
+            User user = userDAO.getUserByToken(token);
 
-        User user = userDAO.getUserByToken(token);
+            ArrayList<Playlist> playlists = playlistDAO.getPlaylists(user.getId());
 
-        ArrayList<Playlist> playlists = playlistDAO.getPlaylists(user.getId());
+            PlaylistsDTO playlistsDTO = new PlaylistsDTO();
+            playlistsDTO.setPlaylists(playlists);
+            playlistsDTO.setLength(playlistDAO.getTotalDuration(playlists));
 
-        PlaylistsDTO playlistsDTO = new PlaylistsDTO();
-        playlistsDTO.setPlaylists(playlists);
-        playlistsDTO.setLength(playlistDAO.getTotalDuration(playlists));
+            return Response.status(status)
+                    .entity(playlistsDTO)
+                    .build();
 
-        return Response.status(status)
-                .entity(playlistsDTO)
-                .build();
+        } catch (InvalidTokenException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
     }
 
     /**
      * Create a new playlist.
+     *
      * @param createPlaylistDTO
      * @param token
      * @return Response with all playlists with response status created.
@@ -91,14 +106,20 @@ public class PlaylistResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createPlaylist(CreatePlaylistDTO createPlaylistDTO, @QueryParam("token") String token) {
-        User user = userDAO.getUserByToken(token);
-        playlistDAO.createPlaylist(createPlaylistDTO.getName(), user.getId());
+        try {
+            User user = userDAO.getUserByToken(token);
+            playlistDAO.createPlaylist(createPlaylistDTO.getName(), user.getId());
+            return getPlaylistsCustomStatus(token, Response.Status.CREATED);
+        } catch (InvalidTokenException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
 
-        return getPlaylistsCustomStatus(token, Response.Status.CREATED);
     }
 
     /**
      * Edit a playlist.
+     *
      * @param id
      * @param editPlaylistDTO
      * @param token
@@ -115,14 +136,21 @@ public class PlaylistResource {
             return getPlaylistsCustomStatus(token, Response.Status.FORBIDDEN);
         }
 
-        User user = userDAO.getUserByToken(token);
+        try {
+            User user = userDAO.getUserByToken(token);
 
-        playlistDAO.editPlaylist(editPlaylistDTO.getName(), id, user.getId());
-        return getPlaylists(token);
+            playlistDAO.editPlaylist(editPlaylistDTO.getName(), id, user.getId());
+            return getPlaylists(token);
+        } catch (InvalidTokenException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+
     }
 
     /**
      * Delete a playlist.
+     *
      * @param id
      * @param token
      * @return All playlists.
@@ -139,6 +167,7 @@ public class PlaylistResource {
 
     /**
      * Get all tracks in a playlist.
+     *
      * @param id
      * @param token
      * @return A response with TracksDTO
@@ -159,6 +188,7 @@ public class PlaylistResource {
 
     /**
      * Add a track to a playlist.
+     *
      * @param id
      * @param addTrackDTO
      * @param token
@@ -176,6 +206,7 @@ public class PlaylistResource {
 
     /**
      * Remove a track from a playlist.
+     *
      * @param playlistId
      * @param trackId
      * @param token
@@ -186,10 +217,17 @@ public class PlaylistResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response removeTrackFromPlaylist(@PathParam("p_id") int playlistId, @PathParam("t_id") int trackId, @QueryParam("token") String token) {
 
-        User user = userDAO.getUserByToken(token);
+        try {
+            User user = userDAO.getUserByToken(token);
 
-        trackDAO.removeTrackFromPlaylist(playlistId, trackId, user.getId());
-        return getTracksForPlaylist(playlistId, token);
+            trackDAO.removeTrackFromPlaylist(playlistId, trackId, user.getId());
+            return getTracksForPlaylist(playlistId, token);
+        } catch (InvalidTokenException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+
+
     }
 
 }

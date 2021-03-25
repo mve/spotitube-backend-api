@@ -1,4 +1,4 @@
-package oose.dea.mikevanegmond.spotitube_backend_api.service;
+package oose.dea.mikevanegmond.spotitube_backend_api.resource;
 
 import oose.dea.mikevanegmond.spotitube_backend_api.dao.ITrackDAO;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.Track;

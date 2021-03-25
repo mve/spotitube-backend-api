@@ -1,6 +1,7 @@
 package oose.dea.mikevanegmond.spotitube_backend_api.dao;
 
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.User;
+import oose.dea.mikevanegmond.spotitube_backend_api.exceptions.InvalidTokenException;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
@@ -50,7 +51,7 @@ public class UserDAO implements IUserDAO {
      * @param token
      * @return User
      */
-    public User getUserByToken(String token) {
+    public User getUserByToken(String token) throws InvalidTokenException {
         User user = new User();
 
         try (Connection connection = dataSource.getConnection()) {
@@ -64,6 +65,8 @@ public class UserDAO implements IUserDAO {
                 user.setUsername(resultSet.getString("username"));
                 user.setPassword(resultSet.getString("password"));
                 user.setToken(resultSet.getString("token"));
+            } else {
+                throw new InvalidTokenException();
             }
         } catch (SQLException exception) {
             exception.printStackTrace();

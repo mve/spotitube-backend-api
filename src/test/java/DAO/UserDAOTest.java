@@ -2,6 +2,7 @@ package DAO;
 
 import oose.dea.mikevanegmond.spotitube_backend_api.dao.UserDAO;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.User;
+import oose.dea.mikevanegmond.spotitube_backend_api.exceptions.InvalidTokenException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -151,7 +152,7 @@ public class UserDAOTest {
     }
 
     @Test
-    public void getUserByTokenExceptionTest() {
+    public void getUserByTokenSqlExceptionTest() {
         try {
             // Arrange
             String expectedSQL = "select * from user where token = ?";
@@ -178,6 +179,44 @@ public class UserDAOTest {
             verify(connection).prepareStatement(expectedSQL);
 
             assertEquals(null, user.getUsername());
+
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void getUserByTokenTokenExceptionTest() {
+        try {
+            // Arrange
+            String expectedSQL = "select * from user where token = ?";
+            final int ID = 0;
+            final String USERNAME = "username";
+            final String PASSWORD = "password";
+            final String TOKEN = "123";
+
+            // setup Mocks
+            DataSource dataSource = mock(DataSource.class);
+            Connection connection = mock(Connection.class);
+            PreparedStatement preparedStatement = mock(PreparedStatement.class);
+            ResultSet resultSet = mock(ResultSet.class);
+
+            // instruct Mocks
+            when(dataSource.getConnection()).thenReturn(connection);
+            when(connection.prepareStatement(expectedSQL)).thenReturn(preparedStatement);
+            when(preparedStatement.executeQuery()).thenReturn(resultSet);
+            when(resultSet.next()).thenReturn(false);
+
+            when(resultSet.getInt("id")).thenReturn(ID);
+            when(resultSet.getString("username")).thenReturn(USERNAME);
+            when(resultSet.getString("password")).thenReturn(PASSWORD);
+            when(resultSet.getString("token")).thenReturn(TOKEN);
+
+            // setup classes
+            userDAO.setDataSource(dataSource);
+
+            // Act & Assert
+            assertThrows(InvalidTokenException.class, () -> userDAO.getUserByToken(TOKEN));
 
         } catch (Exception e) {
             fail();
