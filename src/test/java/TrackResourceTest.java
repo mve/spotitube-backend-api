@@ -29,7 +29,8 @@ public class TrackResourceTest {
     public void setup() {
         trackResource = new TrackResource();
 
-        user = new User(0);
+        user = new User();
+        user.setId(0);
         user.setUsername("username");
         user.setPassword("password");
     }

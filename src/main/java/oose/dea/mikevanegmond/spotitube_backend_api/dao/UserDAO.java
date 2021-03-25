@@ -14,31 +14,6 @@ public class UserDAO implements IUserDAO {
     @Resource(name = "jdbc/spotitube")
     DataSource dataSource;
 
-//    public User getUserById(int id) {
-//
-//        String sql = "select * from user where id = ?";
-//
-//        try (Connection connection = dataSource.getConnection()) {
-//
-//            PreparedStatement statement = connection.prepareStatement(sql);
-//            statement.setInt(1, id);
-//            ResultSet resultSet = statement.executeQuery();
-//
-//            while (resultSet.next()) {
-//                User user = new User(resultSet.getInt("id"));
-//                user.setUsername(resultSet.getString("username"));
-//                user.setPassword(resultSet.getString("password"));
-//                user.setToken(resultSet.getString("token"));
-//
-//                return user;
-//            }
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//
-//        return null;
-//    }
-
     public User getUserByUsername(String username) {
 
         String sql = "select * from user where username = ?";
@@ -50,7 +25,8 @@ public class UserDAO implements IUserDAO {
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                User user = new User(resultSet.getInt("id"));
+                User user = new User();
+                user.setId(resultSet.getInt("id"));
                 user.setUsername(resultSet.getString("username"));
                 user.setPassword(resultSet.getString("password"));
                 user.setToken(resultSet.getString("token"));
@@ -74,8 +50,9 @@ public class UserDAO implements IUserDAO {
             statement.setString(1, token);
             ResultSet resultSet = statement.executeQuery();
 
-            while (resultSet.next()) {
-                User user = new User(resultSet.getInt("id"));
+            if (resultSet.next()) {
+                User user = new User();
+                user.setId(resultSet.getInt("id"));
                 user.setUsername(resultSet.getString("username"));
                 user.setPassword(resultSet.getString("password"));
                 user.setToken(resultSet.getString("token"));
@@ -89,7 +66,7 @@ public class UserDAO implements IUserDAO {
         return null;
     }
 
-    public void update(User newUser) {
+    public boolean update(User newUser) {
 
         String sql = "UPDATE user SET username = ?, password = ?, token = ? WHERE id = ?";
 
@@ -101,20 +78,13 @@ public class UserDAO implements IUserDAO {
             statement.setString(3, newUser.getToken());
             statement.setInt(4, newUser.getId());
 
-            statement.executeUpdate();
+            return statement.executeUpdate() > 0;
 
-//            while (resultSet.next()){
-//                User user = new User(resultSet.getInt("id"));
-//                user.setUsername(resultSet.getString("username"));
-//                user.setPassword(resultSet.getString("password"));
-//                user.setToken(resultSet.getString("token"));
-//
-//                return user;
-//            }
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
 
+        return false;
     }
 
     public void setDataSource(DataSource dataSource) {

@@ -2,7 +2,7 @@ package oose.dea.mikevanegmond.spotitube_backend_api.service;
 
 import oose.dea.mikevanegmond.spotitube_backend_api.dao.IUserDAO;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.User;
-import oose.dea.mikevanegmond.spotitube_backend_api.service.dto.LoginDTO;
+import oose.dea.mikevanegmond.spotitube_backend_api.service.dto.UserDTO;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -26,7 +26,7 @@ public class LoginResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response login(LoginDTO loginRequest) {
+    public Response login(UserDTO loginRequest) {
 
         User user = userDAO.getUserByUsername(loginRequest.getUser());
 
@@ -48,12 +48,12 @@ public class LoginResource {
         user.setToken(newUUID);
         userDAO.update(user);
 
-        LoginDTO loginDTO = new LoginDTO();
-        loginDTO.token = user.getToken();
-        loginDTO.user = user.getUsername();
+        UserDTO userDTO = new UserDTO();
+        userDTO.token = user.getToken();
+        userDTO.user = user.getUsername();
 
         return Response.status(Response.Status.OK)
-                .entity(loginDTO)
+                .entity(userDTO)
                 .build();
     }
 

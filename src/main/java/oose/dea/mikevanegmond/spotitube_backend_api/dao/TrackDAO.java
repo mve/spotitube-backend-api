@@ -16,26 +16,25 @@ public class TrackDAO implements ITrackDAO {
     @Resource(name = "jdbc/spotitube")
     DataSource dataSource;
 
-    @Override
-    public ArrayList<Track> getTracks() {
-
-        // SELECT track.* FROM track INNER JOIN playlisttrack ON playlisttrack.track_id = track.id WHERE playlisttrack.playlist_id = ?
-
-        return null;
-    }
+//    @Override
+//    public ArrayList<Track> getTracks() {
+//
+//        // SELECT track.* FROM track INNER JOIN playlisttrack ON playlisttrack.track_id = track.id WHERE playlisttrack.playlist_id = ?
+//
+//        return null;
+//    }
 
     @Override
     public ArrayList<Track> getTracksFromPlaylist(int playlistId) {
 
         String sql = "SELECT tra.*, pt.offline_available FROM track tra INNER JOIN playlisttrack pt ON pt.track_id = tra.id WHERE pt.playlist_id = ?";
+        ArrayList<Track> tracks = new ArrayList<>();
 
         try (Connection connection = dataSource.getConnection()) {
 
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, playlistId);
             ResultSet resultSet = statement.executeQuery();
-
-            ArrayList<Track> tracks = new ArrayList<>();
 
             while (resultSet.next()) {
                 Track track = new Track();
@@ -52,27 +51,24 @@ public class TrackDAO implements ITrackDAO {
                 tracks.add(track);
             }
 
-            return tracks;
-
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
 
-        return null;
+        return tracks;
     }
 
     @Override
     public ArrayList<Track> getTracksNotFromPlaylist(int playlistId) {
 
         String sql = "SELECT *, 0 AS `available_offline` FROM track WHERE id NOT IN (SELECT track_id FROM playlisttrack WHERE playlist_id = ?);";
+        ArrayList<Track> tracks = new ArrayList<>();
 
         try (Connection connection = dataSource.getConnection()) {
 
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, playlistId);
             ResultSet resultSet = statement.executeQuery();
-
-            ArrayList<Track> tracks = new ArrayList<>();
 
             while (resultSet.next()) {
                 Track track = new Track();
@@ -89,17 +85,15 @@ public class TrackDAO implements ITrackDAO {
                 tracks.add(track);
             }
 
-            return tracks;
-
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
 
-        return null;
+        return tracks;
     }
 
     @Override
-    public void addTrackToPlaylist(int playlistId, int trackId, boolean isAvailableOffline) {
+    public boolean addTrackToPlaylist(int playlistId, int trackId, boolean isAvailableOffline) {
         String sql = "INSERT INTO playlisttrack (track_id, playlist_id, offline_available) VALUES (?, ?, ?)";
 
         try (Connection connection = dataSource.getConnection()) {
@@ -109,14 +103,15 @@ public class TrackDAO implements ITrackDAO {
             statement.setBoolean(3, isAvailableOffline);
 
 
-            statement.executeUpdate();
+            return statement.executeUpdate() > 0;
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
+        return false;
     }
 
     @Override
-    public void removeTrackFromPlaylist(int playlistId, int trackId, int ownerId) {
+    public boolean removeTrackFromPlaylist(int playlistId, int trackId, int ownerId) {
         String sql = "DELETE plt FROM playlisttrack plt JOIN playlist pl ON plt.playlist_id = pl.id WHERE plt.track_id = ? AND plt.playlist_id = ? AND pl.owner_id = ?";
 
         try (Connection connection = dataSource.getConnection()) {
@@ -125,11 +120,11 @@ public class TrackDAO implements ITrackDAO {
             statement.setInt(2, playlistId);
             statement.setInt(3, ownerId);
 
-            statement.executeUpdate();
+            return statement.executeUpdate() > 0;
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
-
+        return false;
     }
 
     public void setDataSource(DataSource dataSource) {

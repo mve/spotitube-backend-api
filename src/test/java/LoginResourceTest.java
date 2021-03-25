@@ -1,7 +1,7 @@
 import oose.dea.mikevanegmond.spotitube_backend_api.dao.IUserDAO;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.User;
 import oose.dea.mikevanegmond.spotitube_backend_api.service.LoginResource;
-import oose.dea.mikevanegmond.spotitube_backend_api.service.dto.LoginDTO;
+import oose.dea.mikevanegmond.spotitube_backend_api.service.dto.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,21 +24,22 @@ public class LoginResourceTest {
     @Test
     public void loginSuccess() {
         // Arrange
-        LoginDTO loginDTO = new LoginDTO();
-        loginDTO.setUser("username");
-        loginDTO.setPassword("password");
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUser("username");
+        userDTO.setPassword("password");
 
         IUserDAO userDAOMock = mock(IUserDAO.class);
 
-        User user = new User(0);
+        User user = new User();
+        user.setId(0);
         user.setUsername("username");
         user.setPassword("password");
 
-        when(userDAOMock.getUserByUsername(loginDTO.getUser())).thenReturn(user);
+        when(userDAOMock.getUserByUsername(userDTO.getUser())).thenReturn(user);
         loginResource.setIUserDAO(userDAOMock);
 
         // Act
-        Response response = loginResource.login(loginDTO);
+        Response response = loginResource.login(userDTO);
 
         // Assert
         assertEquals(Response.Status.OK, response.getStatusInfo());
@@ -47,21 +48,22 @@ public class LoginResourceTest {
     @Test
     public void loginIncorrectPassword() {
         // Arrange
-        LoginDTO loginDTO = new LoginDTO();
-        loginDTO.setUser("username");
-        loginDTO.setPassword("passwrd");
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUser("username");
+        userDTO.setPassword("passwrd");
 
         IUserDAO userDAOMock = mock(IUserDAO.class);
 
-        User user = new User(0);
+        User user = new User();
+        user.setId(0);
         user.setUsername("username");
         user.setPassword("password");
 
-        when(userDAOMock.getUserByUsername(loginDTO.getUser())).thenReturn(user);
+        when(userDAOMock.getUserByUsername(userDTO.getUser())).thenReturn(user);
         loginResource.setIUserDAO(userDAOMock);
 
         // Act
-        Response response = loginResource.login(loginDTO);
+        Response response = loginResource.login(userDTO);
 
         // Assert
         assertEquals(Response.Status.UNAUTHORIZED, response.getStatusInfo());
@@ -71,17 +73,17 @@ public class LoginResourceTest {
     @Test
     public void loginIncorrectUsername() {
         // Arrange
-        LoginDTO loginDTO = new LoginDTO();
-        loginDTO.setUser("usernme");
-        loginDTO.setPassword("password");
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUser("usernme");
+        userDTO.setPassword("password");
 
         IUserDAO userDAOMock = mock(IUserDAO.class);
 
-        when(userDAOMock.getUserByUsername(loginDTO.getUser())).thenReturn(null);
+        when(userDAOMock.getUserByUsername(userDTO.getUser())).thenReturn(null);
         loginResource.setIUserDAO(userDAOMock);
 
         // Act
-        Response response = loginResource.login(loginDTO);
+        Response response = loginResource.login(userDTO);
 
         // Assert
         assertEquals(Response.Status.UNAUTHORIZED, response.getStatusInfo());

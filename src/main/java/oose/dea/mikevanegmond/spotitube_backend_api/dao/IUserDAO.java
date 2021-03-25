@@ -6,5 +6,5 @@ public interface IUserDAO {
 //    User getUserById(int id);
     User getUserByUsername(String username);
     User getUserByToken(String token);
-    void update(User user);
+    boolean update(User user);
 }

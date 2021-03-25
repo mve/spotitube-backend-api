@@ -54,7 +54,10 @@ public class PlaylistDAOTest {
             when(dataSource.getConnection()).thenReturn(connection);
             when(connection.prepareStatement(expectedSQL)).thenReturn(preparedStatement);
             when(preparedStatement.executeQuery()).thenReturn(resultSet);
-            when(resultSet.next()).thenReturn(false);
+            when(resultSet.next()).thenReturn(true).thenReturn(false);
+            when(resultSet.getInt("id")).thenReturn(0);
+            when(resultSet.getString("name")).thenReturn("name");
+            when(resultSet.getInt("owner_id")).thenReturn(0);
 
             // setup classes
             playlistDAO.setDataSource(dataSource);
@@ -65,7 +68,9 @@ public class PlaylistDAOTest {
             // Assert
             verify(connection).prepareStatement(expectedSQL);
 
-            assertEquals(playlists, new ArrayList<Playlist>());
+            assertEquals(playlists.get(0).getId(), 0);
+            assertEquals(playlists.get(0).getName(), "name");
+            assertEquals(playlists.get(0).isOwner(), false);
 
         } catch (Exception e) {
             fail();
@@ -152,7 +157,8 @@ public class PlaylistDAOTest {
         try {
             // Arrange
             String expectedSQL = "SELECT SUM(t.duration) as `duration` FROM track t INNER JOIN playlisttrack pt ON pt.track_id = t.id WHERE pt.playlist_id = ?";
-            int playlistId = 0;
+            final int PLAYLIST_ID = 0;
+            final int DURATION = 10;
             ArrayList<Playlist> playlists = new ArrayList<>();
             playlists.add(getFakePlaylist());
 
@@ -166,17 +172,20 @@ public class PlaylistDAOTest {
             when(dataSource.getConnection()).thenReturn(connection);
             when(connection.prepareStatement(expectedSQL)).thenReturn(preparedStatement);
             when(preparedStatement.executeQuery()).thenReturn(resultSet);
-            when(resultSet.next()).thenReturn(false);
+            when(resultSet.next()).thenReturn(true).thenReturn(false);
+            when(resultSet.getInt("duration")).thenReturn(DURATION);
 
             // setup classes
             playlistDAO.setDataSource(dataSource);
 
             // Act
-            playlistDAO.getTotalDuration(playlists);
+            int actualDuration = playlistDAO.getTotalDuration(playlists);
 
             // Assert
             verify(connection).prepareStatement(expectedSQL);
-            verify(preparedStatement).setInt(1, playlistId);
+            verify(preparedStatement).setInt(1, PLAYLIST_ID);
+
+            assertEquals(DURATION, actualDuration);
 
         } catch (Exception e) {
             fail();

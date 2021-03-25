@@ -28,7 +28,8 @@ public class PlaylistResourceTest {
     public void setup() {
         playlistResource = new PlaylistResource();
 
-        user = new User(0);
+        user = new User();
+        user.setId(0);
         user.setUsername("username");
         user.setPassword("password");
     }
