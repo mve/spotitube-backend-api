@@ -36,6 +36,11 @@ public class PlaylistResource {
         this.userDAO = userDAO;
     }
 
+    /**
+     * Get user by token then return all playlists.
+     * @param token
+     * @return PlaylistsDTO
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getPlaylists(@QueryParam("token") String token) {
@@ -53,6 +58,12 @@ public class PlaylistResource {
                 .build();
     }
 
+    /**
+     * Get all playlists but allows for a custom response status. Useful to send correct status after playlist creation for example.
+     * @param token
+     * @param status
+     * @return Response with laylistsDTO
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getPlaylistsCustomStatus(@QueryParam("token") String token, Response.Status status) {
@@ -70,6 +81,12 @@ public class PlaylistResource {
                 .build();
     }
 
+    /**
+     * Create a new playlist.
+     * @param createPlaylistDTO
+     * @param token
+     * @return Response with all playlists with response status created.
+     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -80,6 +97,13 @@ public class PlaylistResource {
         return getPlaylistsCustomStatus(token, Response.Status.CREATED);
     }
 
+    /**
+     * Edit a playlist.
+     * @param id
+     * @param editPlaylistDTO
+     * @param token
+     * @return all playlists
+     */
     @PUT
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -94,9 +118,15 @@ public class PlaylistResource {
         User user = userDAO.getUserByToken(token);
 
         playlistDAO.editPlaylist(editPlaylistDTO.getName(), id, user.getId());
-        return getPlaylistsCustomStatus(token, Response.Status.OK);
+        return getPlaylists(token);
     }
 
+    /**
+     * Delete a playlist.
+     * @param id
+     * @param token
+     * @return All playlists.
+     */
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -104,9 +134,15 @@ public class PlaylistResource {
 
         playlistDAO.delete(id);
 
-        return getPlaylistsCustomStatus(token, Response.Status.OK);
+        return getPlaylists(token);
     }
 
+    /**
+     * Get all tracks in a playlist.
+     * @param id
+     * @param token
+     * @return A response with TracksDTO
+     */
     @GET
     @Path("/{id}/tracks")
     @Produces(MediaType.APPLICATION_JSON)
@@ -121,6 +157,13 @@ public class PlaylistResource {
                 .build();
     }
 
+    /**
+     * Add a track to a playlist.
+     * @param id
+     * @param addTrackDTO
+     * @param token
+     * @return All tracks in a playlist.
+     */
     @POST
     @Path("/{id}/tracks")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -131,6 +174,13 @@ public class PlaylistResource {
         return getTracksForPlaylist(id, token);
     }
 
+    /**
+     * Remove a track from a playlist.
+     * @param playlistId
+     * @param trackId
+     * @param token
+     * @return All tracks in a playlist.
+     */
     @DELETE
     @Path("/{p_id}/tracks/{t_id}")
     @Produces(MediaType.APPLICATION_JSON)

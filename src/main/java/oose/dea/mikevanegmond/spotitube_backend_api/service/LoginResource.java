@@ -23,6 +23,11 @@ public class LoginResource {
         this.userDAO = userDAO;
     }
 
+    /**
+     * Checks username and password combination, if correct generates a new token and logs user in.
+     * @param loginRequest
+     * @return UserDTO with a token and username.
+     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)

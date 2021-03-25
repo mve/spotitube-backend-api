@@ -15,6 +15,11 @@ public class TrackDAO implements ITrackDAO {
     @Resource(name = "jdbc/spotitube")
     DataSource dataSource;
 
+    /**
+     * Get all tracks in a playlist.
+     * @param playlistId
+     * @return ArrayList<Track>
+     */
     @Override
     public ArrayList<Track> getTracksFromPlaylist(int playlistId) {
 
@@ -49,6 +54,11 @@ public class TrackDAO implements ITrackDAO {
         return tracks;
     }
 
+    /**
+     * Get all tracks not already in playlist.
+     * @param playlistId
+     * @return ArrayList<Track>
+     */
     @Override
     public ArrayList<Track> getTracksNotFromPlaylist(int playlistId) {
 
@@ -83,6 +93,13 @@ public class TrackDAO implements ITrackDAO {
         return tracks;
     }
 
+    /**
+     * Add a track to a playlist.
+     * @param playlistId
+     * @param trackId
+     * @param isAvailableOffline
+     * @return boolean, true if successful, false if failed.
+     */
     @Override
     public boolean addTrackToPlaylist(int playlistId, int trackId, boolean isAvailableOffline) {
         String sql = "INSERT INTO playlisttrack (track_id, playlist_id, offline_available) VALUES (?, ?, ?)";
@@ -101,6 +118,13 @@ public class TrackDAO implements ITrackDAO {
         return success;
     }
 
+    /**
+     * Remove a track from a playlist.
+     * @param playlistId
+     * @param trackId
+     * @param ownerId
+     * @return boolean, true if successful, false if failed.
+     */
     @Override
     public boolean removeTrackFromPlaylist(int playlistId, int trackId, int ownerId) {
         String sql = "DELETE plt FROM playlisttrack plt JOIN playlist pl ON plt.playlist_id = pl.id WHERE plt.track_id = ? AND plt.playlist_id = ? AND pl.owner_id = ?";

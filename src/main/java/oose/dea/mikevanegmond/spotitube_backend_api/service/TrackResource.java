@@ -23,6 +23,12 @@ public class TrackResource {
         this.trackDAO = trackDAO;
     }
 
+    /**
+     * Get all tracks not in a playlist.
+     * @param token
+     * @param forPlaylist
+     * @return Response with TracksDTO.
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTracksNotFromPlaylist(@QueryParam("token") String token, @QueryParam("forPlaylist") int forPlaylist) {

@@ -14,6 +14,11 @@ public class UserDAO implements IUserDAO {
     @Resource(name = "jdbc/spotitube")
     DataSource dataSource;
 
+    /**
+     * Get a user by username.
+     * @param username
+     * @return User
+     */
     public User getUserByUsername(String username) {
         String sql = "select * from user where username = ?";
         User user = new User();
@@ -37,6 +42,11 @@ public class UserDAO implements IUserDAO {
         return user;
     }
 
+    /**
+     * Get a user by a token.
+     * @param token
+     * @return User
+     */
     public User getUserByToken(String token) {
         String sql = "select * from user where token = ?";
         User user = new User();
@@ -60,6 +70,11 @@ public class UserDAO implements IUserDAO {
         return user;
     }
 
+    /**
+     * Update an existing user.
+     * @param newUser
+     * @return boolean, true if successful, false if failed.
+     */
     public boolean update(User newUser) {
         String sql = "UPDATE user SET username = ?, password = ?, token = ? WHERE id = ?";
         boolean success = false;
