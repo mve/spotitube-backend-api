@@ -1,9 +1,9 @@
-package service;
+package resource;
 
 import oose.dea.mikevanegmond.spotitube_backend_api.dao.IUserDAO;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.User;
-import oose.dea.mikevanegmond.spotitube_backend_api.service.LoginResource;
-import oose.dea.mikevanegmond.spotitube_backend_api.dto.LoginRequestDTO;
+import oose.dea.mikevanegmond.spotitube_backend_api.resource.LoginResource;
+import oose.dea.mikevanegmond.spotitube_backend_api.dto.login.LoginRequestDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

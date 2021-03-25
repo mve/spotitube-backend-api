@@ -1,4 +1,4 @@
-package oose.dea.mikevanegmond.spotitube_backend_api.dto;
+package oose.dea.mikevanegmond.spotitube_backend_api.dto.track;
 
 public class AddTrackDTO {
     private int id;

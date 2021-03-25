@@ -1,4 +1,4 @@
-package service;
+package resource;
 
 import oose.dea.mikevanegmond.spotitube_backend_api.dao.IPlaylistDAO;
 import oose.dea.mikevanegmond.spotitube_backend_api.dao.ITrackDAO;
@@ -6,9 +6,11 @@ import oose.dea.mikevanegmond.spotitube_backend_api.dao.IUserDAO;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.Playlist;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.Track;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.User;
+import oose.dea.mikevanegmond.spotitube_backend_api.dto.playlist.CreatePlaylistDTO;
+import oose.dea.mikevanegmond.spotitube_backend_api.dto.playlist.EditPlaylistDTO;
+import oose.dea.mikevanegmond.spotitube_backend_api.dto.track.AddTrackDTO;
 import oose.dea.mikevanegmond.spotitube_backend_api.exceptions.InvalidTokenException;
-import oose.dea.mikevanegmond.spotitube_backend_api.service.PlaylistResource;
-import oose.dea.mikevanegmond.spotitube_backend_api.dto.*;
+import oose.dea.mikevanegmond.spotitube_backend_api.resource.PlaylistResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -1,9 +1,9 @@
-package oose.dea.mikevanegmond.spotitube_backend_api.service;
+package oose.dea.mikevanegmond.spotitube_backend_api.resource;
 
 import oose.dea.mikevanegmond.spotitube_backend_api.dao.IUserDAO;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.User;
-import oose.dea.mikevanegmond.spotitube_backend_api.dto.LoginRequestDTO;
-import oose.dea.mikevanegmond.spotitube_backend_api.dto.LoginResponseDTO;
+import oose.dea.mikevanegmond.spotitube_backend_api.dto.login.LoginRequestDTO;
+import oose.dea.mikevanegmond.spotitube_backend_api.dto.login.LoginResponseDTO;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;

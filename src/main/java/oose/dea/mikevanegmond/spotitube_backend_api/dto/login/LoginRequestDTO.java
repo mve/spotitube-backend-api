@@ -1,4 +1,4 @@
-package oose.dea.mikevanegmond.spotitube_backend_api.dto;
+package oose.dea.mikevanegmond.spotitube_backend_api.dto.login;
 
 public class LoginRequestDTO {
     private String user;
