@@ -14,18 +14,21 @@ public class UserDAO implements IUserDAO {
     @Resource(name = "jdbc/spotitube")
     DataSource dataSource;
 
+    final String SQL_GET_USER_BY_USERNAME = "select * from user where username = ?";
+    final String SQL_GET_USER_BY_TOKEN = "select * from user where token = ?";
+    final String SQL_UPDATE_USER = "UPDATE user SET username = ?, password = ?, token = ? WHERE id = ?";
+
     /**
      * Get a user by username.
      * @param username
      * @return User
      */
     public User getUserByUsername(String username) {
-        String sql = "select * from user where username = ?";
         User user = new User();
 
         try (Connection connection = dataSource.getConnection()) {
 
-            PreparedStatement statement = connection.prepareStatement(sql);
+            PreparedStatement statement = connection.prepareStatement(SQL_GET_USER_BY_USERNAME);
             statement.setString(1, username);
             ResultSet resultSet = statement.executeQuery();
 
@@ -48,12 +51,11 @@ public class UserDAO implements IUserDAO {
      * @return User
      */
     public User getUserByToken(String token) {
-        String sql = "select * from user where token = ?";
         User user = new User();
 
         try (Connection connection = dataSource.getConnection()) {
 
-            PreparedStatement statement = connection.prepareStatement(sql);
+            PreparedStatement statement = connection.prepareStatement(SQL_GET_USER_BY_TOKEN);
             statement.setString(1, token);
             ResultSet resultSet = statement.executeQuery();
 
@@ -76,12 +78,11 @@ public class UserDAO implements IUserDAO {
      * @return boolean, true if successful, false if failed.
      */
     public boolean update(User newUser) {
-        String sql = "UPDATE user SET username = ?, password = ?, token = ? WHERE id = ?";
         boolean success = false;
 
         try (Connection connection = dataSource.getConnection()) {
 
-            PreparedStatement statement = connection.prepareStatement(sql);
+            PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_USER);
             statement.setString(1, newUser.getUsername());
             statement.setString(2, newUser.getPassword());
             statement.setString(3, newUser.getToken());
