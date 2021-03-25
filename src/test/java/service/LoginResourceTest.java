@@ -3,7 +3,7 @@ package service;
 import oose.dea.mikevanegmond.spotitube_backend_api.dao.IUserDAO;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.User;
 import oose.dea.mikevanegmond.spotitube_backend_api.service.LoginResource;
-import oose.dea.mikevanegmond.spotitube_backend_api.service.dto.UserDTO;
+import oose.dea.mikevanegmond.spotitube_backend_api.dto.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -2,7 +2,7 @@ package oose.dea.mikevanegmond.spotitube_backend_api.service;
 
 import oose.dea.mikevanegmond.spotitube_backend_api.dao.ITrackDAO;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.Track;
-import oose.dea.mikevanegmond.spotitube_backend_api.service.dto.TracksDTO;
+import oose.dea.mikevanegmond.spotitube_backend_api.dto.TracksDTO;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;

@@ -6,7 +6,7 @@ import oose.dea.mikevanegmond.spotitube_backend_api.dao.IUserDAO;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.Playlist;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.Track;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.User;
-import oose.dea.mikevanegmond.spotitube_backend_api.service.dto.*;
+import oose.dea.mikevanegmond.spotitube_backend_api.dto.*;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;

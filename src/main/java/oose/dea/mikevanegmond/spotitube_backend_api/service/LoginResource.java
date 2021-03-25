@@ -2,7 +2,7 @@ package oose.dea.mikevanegmond.spotitube_backend_api.service;
 
 import oose.dea.mikevanegmond.spotitube_backend_api.dao.IUserDAO;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.User;
-import oose.dea.mikevanegmond.spotitube_backend_api.service.dto.UserDTO;
+import oose.dea.mikevanegmond.spotitube_backend_api.dto.UserDTO;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
