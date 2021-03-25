@@ -1,13 +1,8 @@
 package oose.dea.mikevanegmond.spotitube_backend_api.dto;
 
-public class UserDTO {
-    public String token;
+public class LoginRequestDTO {
     private String user;
     private String password;
-
-    public void setToken(String token) {
-        this.token = token;
-    }
 
     public String getUser() {
         return user;

@@ -2,7 +2,8 @@ package oose.dea.mikevanegmond.spotitube_backend_api.service;
 
 import oose.dea.mikevanegmond.spotitube_backend_api.dao.IUserDAO;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.User;
-import oose.dea.mikevanegmond.spotitube_backend_api.dto.UserDTO;
+import oose.dea.mikevanegmond.spotitube_backend_api.dto.LoginRequestDTO;
+import oose.dea.mikevanegmond.spotitube_backend_api.dto.LoginResponseDTO;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -26,12 +27,12 @@ public class LoginResource {
     /**
      * Checks username and password combination, if correct generates a new token and logs user in.
      * @param loginRequest
-     * @return UserDTO with a token and username.
+     * @return LoginResponseDTO with a token and username.
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response login(UserDTO loginRequest) {
+    public Response login(LoginRequestDTO loginRequest) {
 
         User user = userDAO.getUserByUsername(loginRequest.getUser());
 
@@ -53,12 +54,12 @@ public class LoginResource {
         user.setToken(newUUID);
         userDAO.update(user);
 
-        UserDTO userDTO = new UserDTO();
-        userDTO.setToken(user.getToken());
-        userDTO.setUser(user.getUsername());
+        LoginResponseDTO loginResponseDTO = new LoginResponseDTO();
+        loginResponseDTO.setToken(user.getToken());
+        loginResponseDTO.setUser(user.getUsername());
 
         return Response.status(Response.Status.OK)
-                .entity(userDTO)
+                .entity(loginResponseDTO)
                 .build();
     }
 
