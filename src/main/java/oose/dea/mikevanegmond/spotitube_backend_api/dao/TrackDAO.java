@@ -1,6 +1,5 @@
 package oose.dea.mikevanegmond.spotitube_backend_api.dao;
 
-import oose.dea.mikevanegmond.spotitube_backend_api.domain.Playlist;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.Track;
 
 import javax.annotation.Resource;
@@ -15,14 +14,6 @@ public class TrackDAO implements ITrackDAO {
 
     @Resource(name = "jdbc/spotitube")
     DataSource dataSource;
-
-//    @Override
-//    public ArrayList<Track> getTracks() {
-//
-//        // SELECT track.* FROM track INNER JOIN playlisttrack ON playlisttrack.track_id = track.id WHERE playlisttrack.playlist_id = ?
-//
-//        return null;
-//    }
 
     @Override
     public ArrayList<Track> getTracksFromPlaylist(int playlistId) {
@@ -95,6 +86,7 @@ public class TrackDAO implements ITrackDAO {
     @Override
     public boolean addTrackToPlaylist(int playlistId, int trackId, boolean isAvailableOffline) {
         String sql = "INSERT INTO playlisttrack (track_id, playlist_id, offline_available) VALUES (?, ?, ?)";
+        boolean success = false;
 
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
@@ -102,17 +94,17 @@ public class TrackDAO implements ITrackDAO {
             statement.setInt(2, playlistId);
             statement.setBoolean(3, isAvailableOffline);
 
-
-            return statement.executeUpdate() > 0;
+            success = statement.executeUpdate() > 0;
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
-        return false;
+        return success;
     }
 
     @Override
     public boolean removeTrackFromPlaylist(int playlistId, int trackId, int ownerId) {
         String sql = "DELETE plt FROM playlisttrack plt JOIN playlist pl ON plt.playlist_id = pl.id WHERE plt.track_id = ? AND plt.playlist_id = ? AND pl.owner_id = ?";
+        boolean success = false;
 
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
@@ -120,11 +112,11 @@ public class TrackDAO implements ITrackDAO {
             statement.setInt(2, playlistId);
             statement.setInt(3, ownerId);
 
-            return statement.executeUpdate() > 0;
+            success = statement.executeUpdate() > 0;
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
-        return false;
+        return success;
     }
 
     public void setDataSource(DataSource dataSource) {

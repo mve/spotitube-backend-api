@@ -5,10 +5,6 @@ public class CreatePlaylistDTO {
     public String name;
     public boolean owner;
 
-    public int getId() {
-        return id;
-    }
-
     public void setId(int id) {
         this.id = id;
     }
@@ -19,10 +15,6 @@ public class CreatePlaylistDTO {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public boolean isOwner() {
-        return owner;
     }
 
     public void setOwner(boolean owner) {

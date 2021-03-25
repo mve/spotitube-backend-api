@@ -1,5 +1,6 @@
+package DAO;
+
 import oose.dea.mikevanegmond.spotitube_backend_api.dao.UserDAO;
-import oose.dea.mikevanegmond.spotitube_backend_api.domain.Track;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,7 +9,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
+import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -69,6 +70,40 @@ public class UserDAOTest {
     }
 
     @Test
+    public void getUserByUsernameExceptionTest() {
+        try {
+            // Arrange
+            String expectedSQL = "select * from user where username = ?";
+            final String USERNAME = "username";
+
+            // setup Mocks
+            DataSource dataSource = mock(DataSource.class);
+            Connection connection = mock(Connection.class);
+            PreparedStatement preparedStatement = mock(PreparedStatement.class);
+
+            // instruct Mocks
+            when(dataSource.getConnection()).thenReturn(connection);
+            when(connection.prepareStatement(expectedSQL)).thenReturn(preparedStatement);
+            when(preparedStatement.executeQuery()).thenThrow(new SQLException());
+
+
+            // setup classes
+            userDAO.setDataSource(dataSource);
+
+            // Act
+            User user = userDAO.getUserByUsername(USERNAME);
+
+            // Assert
+            verify(connection).prepareStatement(expectedSQL);
+
+            assertEquals(null, user.getUsername());
+
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
     public void getUserByTokenTest() {
         try {
             // Arrange
@@ -116,7 +151,41 @@ public class UserDAOTest {
     }
 
     @Test
-    public void updateTest() {
+    public void getUserByTokenExceptionTest() {
+        try {
+            // Arrange
+            String expectedSQL = "select * from user where token = ?";
+            final String TOKEN = "123";
+
+            // setup Mocks
+            DataSource dataSource = mock(DataSource.class);
+            Connection connection = mock(Connection.class);
+            PreparedStatement preparedStatement = mock(PreparedStatement.class);
+            ResultSet resultSet = mock(ResultSet.class);
+
+            // instruct Mocks
+            when(dataSource.getConnection()).thenReturn(connection);
+            when(connection.prepareStatement(expectedSQL)).thenReturn(preparedStatement);
+            when(preparedStatement.executeQuery()).thenThrow(new SQLException());
+
+            // setup classes
+            userDAO.setDataSource(dataSource);
+
+            // Act
+            User user = userDAO.getUserByToken(TOKEN);
+
+            // Assert
+            verify(connection).prepareStatement(expectedSQL);
+
+            assertEquals(null, user.getUsername());
+
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void updateSuccessTest() {
         try {
             // Arrange
             String expectedSQL = "UPDATE user SET username = ?, password = ?, token = ? WHERE id = ?";
@@ -151,6 +220,90 @@ public class UserDAOTest {
             verify(connection).prepareStatement(expectedSQL);
 
             assertTrue(status);
+
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void updateFailedTest() {
+        try {
+            // Arrange
+            String expectedSQL = "UPDATE user SET username = ?, password = ?, token = ? WHERE id = ?";
+            final int ID = 0;
+            final String USERNAME = "username";
+            final String PASSWORD = "password";
+            final String TOKEN = "123";
+
+            User user = new User();
+            user.setId(ID);
+            user.setUsername(USERNAME);
+            user.setPassword(PASSWORD);
+            user.setToken(TOKEN);
+
+            // setup Mocks
+            DataSource dataSource = mock(DataSource.class);
+            Connection connection = mock(Connection.class);
+            PreparedStatement preparedStatement = mock(PreparedStatement.class);
+
+            // instruct Mocks
+            when(dataSource.getConnection()).thenReturn(connection);
+            when(connection.prepareStatement(expectedSQL)).thenReturn(preparedStatement);
+            when(preparedStatement.executeUpdate()).thenReturn(0);
+
+            // setup classes
+            userDAO.setDataSource(dataSource);
+
+            // Act
+            boolean status = userDAO.update(user);
+
+            // Assert
+            verify(connection).prepareStatement(expectedSQL);
+
+            assertFalse(status);
+
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void updateExceptionTest() {
+        try {
+            // Arrange
+            String expectedSQL = "UPDATE user SET username = ?, password = ?, token = ? WHERE id = ?";
+            final int ID = 0;
+            final String USERNAME = "username";
+            final String PASSWORD = "password";
+            final String TOKEN = "123";
+
+            User user = new User();
+            user.setId(ID);
+            user.setUsername(USERNAME);
+            user.setPassword(PASSWORD);
+            user.setToken(TOKEN);
+
+            // setup Mocks
+            DataSource dataSource = mock(DataSource.class);
+            Connection connection = mock(Connection.class);
+            PreparedStatement preparedStatement = mock(PreparedStatement.class);
+
+            // instruct Mocks
+            when(dataSource.getConnection()).thenReturn(connection);
+            when(connection.prepareStatement(expectedSQL)).thenReturn(preparedStatement);
+            when(preparedStatement.executeUpdate()).thenThrow(new SQLException());
+
+            // setup classes
+            userDAO.setDataSource(dataSource);
+
+            // Act
+            boolean status = userDAO.update(user);
+
+            // Assert
+            verify(connection).prepareStatement(expectedSQL);
+
+            assertFalse(status);
 
         } catch (Exception e) {
             fail();

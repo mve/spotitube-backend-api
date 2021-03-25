@@ -15,8 +15,8 @@ public class UserDAO implements IUserDAO {
     DataSource dataSource;
 
     public User getUserByUsername(String username) {
-
         String sql = "select * from user where username = ?";
+        User user = new User();
 
         try (Connection connection = dataSource.getConnection()) {
 
@@ -24,25 +24,22 @@ public class UserDAO implements IUserDAO {
             statement.setString(1, username);
             ResultSet resultSet = statement.executeQuery();
 
-            while (resultSet.next()) {
-                User user = new User();
+            if (resultSet.next()) {
                 user.setId(resultSet.getInt("id"));
                 user.setUsername(resultSet.getString("username"));
                 user.setPassword(resultSet.getString("password"));
                 user.setToken(resultSet.getString("token"));
-
-                return user;
             }
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
 
-        return null;
+        return user;
     }
 
     public User getUserByToken(String token) {
-
         String sql = "select * from user where token = ?";
+        User user = new User();
 
         try (Connection connection = dataSource.getConnection()) {
 
@@ -51,24 +48,21 @@ public class UserDAO implements IUserDAO {
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                User user = new User();
                 user.setId(resultSet.getInt("id"));
                 user.setUsername(resultSet.getString("username"));
                 user.setPassword(resultSet.getString("password"));
                 user.setToken(resultSet.getString("token"));
-
-                return user;
             }
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
 
-        return null;
+        return user;
     }
 
     public boolean update(User newUser) {
-
         String sql = "UPDATE user SET username = ?, password = ?, token = ? WHERE id = ?";
+        boolean success = false;
 
         try (Connection connection = dataSource.getConnection()) {
 
@@ -78,13 +72,12 @@ public class UserDAO implements IUserDAO {
             statement.setString(3, newUser.getToken());
             statement.setInt(4, newUser.getId());
 
-            return statement.executeUpdate() > 0;
-
+            success = statement.executeUpdate() > 0;
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
 
-        return false;
+        return success;
     }
 
     public void setDataSource(DataSource dataSource) {

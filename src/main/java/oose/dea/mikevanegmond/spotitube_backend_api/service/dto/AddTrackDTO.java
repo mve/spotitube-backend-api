@@ -2,10 +2,10 @@ package oose.dea.mikevanegmond.spotitube_backend_api.service.dto;
 
 public class AddTrackDTO {
     private int id;
-    private int duration;
+    public int duration;
     private boolean offlineAvailable;
-    private String performer;
-    private String title;
+    public String performer;
+    public String title;
 
     public int getId() {
         return id;
@@ -13,10 +13,6 @@ public class AddTrackDTO {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public int getDuration() {
-        return duration;
     }
 
     public void setDuration(int duration) {
@@ -31,16 +27,8 @@ public class AddTrackDTO {
         this.offlineAvailable = offlineAvailable;
     }
 
-    public String getPerformer() {
-        return performer;
-    }
-
     public void setPerformer(String performer) {
         this.performer = performer;
-    }
-
-    public String getTitle() {
-        return title;
     }
 
     public void setTitle(String title) {

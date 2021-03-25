@@ -6,10 +6,6 @@ public class User {
     private String password;
     private String token;
 
-//    public User(int id) {
-//        this.id = id;
-//    }
-
     public int getId() {
         return id;
     }

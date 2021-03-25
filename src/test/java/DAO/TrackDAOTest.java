@@ -1,5 +1,6 @@
+package DAO;
+
 import oose.dea.mikevanegmond.spotitube_backend_api.dao.TrackDAO;
-import oose.dea.mikevanegmond.spotitube_backend_api.domain.Playlist;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.Track;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,16 +22,6 @@ public class TrackDAOTest {
     public void setup() {
         trackDAO = new TrackDAO();
     }
-
-//    public Playlist getFakePlaylist() {
-//        Playlist playlist = new Playlist();
-//        playlist.setId(0);
-//        playlist.setName("name");
-//        playlist.setOwner(false);
-//        playlist.setTracks(new ArrayList<Track>());
-//
-//        return playlist;
-//    }
 
     @Test
     public void getTracksFromPlaylistTest() {
@@ -77,6 +69,39 @@ public class TrackDAOTest {
             assertEquals("1-1-2021", tracks.get(0).getPublicationDate());
             assertEquals("Description", tracks.get(0).getDescription());
             assertEquals(true, tracks.get(0).isOfflineAvailable());
+
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void getTracksFromPlaylistExceptionTest() {
+        try {
+            // Arrange
+            String expectedSQL = "SELECT tra.*, pt.offline_available FROM track tra INNER JOIN playlisttrack pt ON pt.track_id = tra.id WHERE pt.playlist_id = ?";
+            final int PLAYLIST_ID = 0;
+
+            // setup Mocks
+            DataSource dataSource = mock(DataSource.class);
+            Connection connection = mock(Connection.class);
+            PreparedStatement preparedStatement = mock(PreparedStatement.class);
+
+            // instruct Mocks
+            when(dataSource.getConnection()).thenReturn(connection);
+            when(connection.prepareStatement(expectedSQL)).thenReturn(preparedStatement);
+            when(preparedStatement.executeQuery()).thenThrow(new SQLException());
+
+            // setup classes
+            trackDAO.setDataSource(dataSource);
+
+            // Act
+            ArrayList<Track> tracks = trackDAO.getTracksFromPlaylist(PLAYLIST_ID);
+
+            // Assert
+            verify(connection).prepareStatement(expectedSQL);
+
+            assertEquals(0, tracks.size());
 
         } catch (Exception e) {
             fail();
@@ -136,7 +161,41 @@ public class TrackDAOTest {
     }
 
     @Test
-    public void addTrackToPlaylistTest() {
+    public void getTracksNotFromPlaylistExceptionTest() {
+        try {
+            // Arrange
+            String expectedSQL = "SELECT *, 0 AS `available_offline` FROM track WHERE id NOT IN (SELECT track_id FROM playlisttrack WHERE playlist_id = ?);";
+            final int PLAYLIST_ID = 0;
+
+            // setup Mocks
+            DataSource dataSource = mock(DataSource.class);
+            Connection connection = mock(Connection.class);
+            PreparedStatement preparedStatement = mock(PreparedStatement.class);
+
+            // instruct Mocks
+            when(dataSource.getConnection()).thenReturn(connection);
+            when(connection.prepareStatement(expectedSQL)).thenReturn(preparedStatement);
+            when(preparedStatement.executeQuery()).thenThrow(new SQLException());
+
+
+            // setup classes
+            trackDAO.setDataSource(dataSource);
+
+            // Act
+            ArrayList<Track> tracks = trackDAO.getTracksNotFromPlaylist(PLAYLIST_ID);
+
+            // Assert
+            verify(connection).prepareStatement(expectedSQL);
+
+            assertEquals(0, tracks.size());
+
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void addTrackToPlaylistSuccessTest() {
         try {
             // Arrange
             String expectedSQL = "INSERT INTO playlisttrack (track_id, playlist_id, offline_available) VALUES (?, ?, ?)";
@@ -171,7 +230,77 @@ public class TrackDAOTest {
     }
 
     @Test
-    public void removeTrackFromPlaylistTest() {
+    public void addTrackToPlaylistFailedTest() {
+        try {
+            // Arrange
+            String expectedSQL = "INSERT INTO playlisttrack (track_id, playlist_id, offline_available) VALUES (?, ?, ?)";
+            final int PLAYLIST_ID = 0;
+            final int TRACK_ID = 0;
+            final boolean IS_AVAILABLE_OFFLINE = true;
+
+            // setup Mocks
+            DataSource dataSource = mock(DataSource.class);
+            Connection connection = mock(Connection.class);
+            PreparedStatement preparedStatement = mock(PreparedStatement.class);
+
+            // instruct Mocks
+            when(dataSource.getConnection()).thenReturn(connection);
+            when(connection.prepareStatement(expectedSQL)).thenReturn(preparedStatement);
+            when(preparedStatement.executeUpdate()).thenReturn(0);
+
+            // setup classes
+            trackDAO.setDataSource(dataSource);
+
+            // Act
+            boolean status = trackDAO.addTrackToPlaylist(PLAYLIST_ID, TRACK_ID, IS_AVAILABLE_OFFLINE);
+
+            // Assert
+            verify(connection).prepareStatement(expectedSQL);
+
+            assertFalse(status);
+
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void addTrackToPlaylistExceptionTest() {
+        try {
+            // Arrange
+            String expectedSQL = "INSERT INTO playlisttrack (track_id, playlist_id, offline_available) VALUES (?, ?, ?)";
+            final int PLAYLIST_ID = 0;
+            final int TRACK_ID = 0;
+            final boolean IS_AVAILABLE_OFFLINE = true;
+
+            // setup Mocks
+            DataSource dataSource = mock(DataSource.class);
+            Connection connection = mock(Connection.class);
+            PreparedStatement preparedStatement = mock(PreparedStatement.class);
+
+            // instruct Mocks
+            when(dataSource.getConnection()).thenReturn(connection);
+            when(connection.prepareStatement(expectedSQL)).thenReturn(preparedStatement);
+            when(preparedStatement.executeUpdate()).thenThrow(new SQLException());
+
+            // setup classes
+            trackDAO.setDataSource(dataSource);
+
+            // Act
+            boolean status = trackDAO.addTrackToPlaylist(PLAYLIST_ID, TRACK_ID, IS_AVAILABLE_OFFLINE);
+
+            // Assert
+            verify(connection).prepareStatement(expectedSQL);
+
+            assertFalse(status);
+
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void removeTrackFromPlaylistSuccessTest() {
         try {
             // Arrange
             String expectedSQL = "DELETE plt FROM playlisttrack plt JOIN playlist pl ON plt.playlist_id = pl.id WHERE plt.track_id = ? AND plt.playlist_id = ? AND pl.owner_id = ?";
@@ -205,4 +334,73 @@ public class TrackDAOTest {
         }
     }
 
+    @Test
+    public void removeTrackFromPlaylistFailedTest() {
+        try {
+            // Arrange
+            String expectedSQL = "DELETE plt FROM playlisttrack plt JOIN playlist pl ON plt.playlist_id = pl.id WHERE plt.track_id = ? AND plt.playlist_id = ? AND pl.owner_id = ?";
+            final int PLAYLIST_ID = 0;
+            final int TRACK_ID = 0;
+            final int OWNER_ID = 0;
+
+            // setup Mocks
+            DataSource dataSource = mock(DataSource.class);
+            Connection connection = mock(Connection.class);
+            PreparedStatement preparedStatement = mock(PreparedStatement.class);
+
+            // instruct Mocks
+            when(dataSource.getConnection()).thenReturn(connection);
+            when(connection.prepareStatement(expectedSQL)).thenReturn(preparedStatement);
+            when(preparedStatement.executeUpdate()).thenReturn(0);
+
+            // setup classes
+            trackDAO.setDataSource(dataSource);
+
+            // Act
+            boolean status = trackDAO.removeTrackFromPlaylist(PLAYLIST_ID, TRACK_ID, OWNER_ID);
+
+            // Assert
+            verify(connection).prepareStatement(expectedSQL);
+
+            assertFalse(status);
+
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void removeTrackFromPlaylistExceptionTest() {
+        try {
+            // Arrange
+            String expectedSQL = "DELETE plt FROM playlisttrack plt JOIN playlist pl ON plt.playlist_id = pl.id WHERE plt.track_id = ? AND plt.playlist_id = ? AND pl.owner_id = ?";
+            final int PLAYLIST_ID = 0;
+            final int TRACK_ID = 0;
+            final int OWNER_ID = 0;
+
+            // setup Mocks
+            DataSource dataSource = mock(DataSource.class);
+            Connection connection = mock(Connection.class);
+            PreparedStatement preparedStatement = mock(PreparedStatement.class);
+
+            // instruct Mocks
+            when(dataSource.getConnection()).thenReturn(connection);
+            when(connection.prepareStatement(expectedSQL)).thenReturn(preparedStatement);
+            when(preparedStatement.executeUpdate()).thenThrow(new SQLException());
+
+            // setup classes
+            trackDAO.setDataSource(dataSource);
+
+            // Act
+            boolean status = trackDAO.removeTrackFromPlaylist(PLAYLIST_ID, TRACK_ID, OWNER_ID);
+
+            // Assert
+            verify(connection).prepareStatement(expectedSQL);
+
+            assertFalse(status);
+
+        } catch (Exception e) {
+            fail();
+        }
+    }
 }

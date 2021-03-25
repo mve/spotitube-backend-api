@@ -49,8 +49,8 @@ public class LoginResource {
         userDAO.update(user);
 
         UserDTO userDTO = new UserDTO();
-        userDTO.token = user.getToken();
-        userDTO.user = user.getUsername();
+        userDTO.setToken(user.getToken());
+        userDTO.setUser(user.getUsername());
 
         return Response.status(Response.Status.OK)
                 .entity(userDTO)

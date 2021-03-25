@@ -2,12 +2,8 @@ package oose.dea.mikevanegmond.spotitube_backend_api.service.dto;
 
 public class EditPlaylistDTO {
     public int id;
-    public String name;
-    public boolean owner;
-
-    public int getId() {
-        return id;
-    }
+    private String name;
+    private boolean owner;
 
     public void setId(int id) {
         this.id = id;

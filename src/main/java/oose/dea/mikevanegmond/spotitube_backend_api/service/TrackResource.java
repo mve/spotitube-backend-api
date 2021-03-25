@@ -1,10 +1,7 @@
 package oose.dea.mikevanegmond.spotitube_backend_api.service;
 
 import oose.dea.mikevanegmond.spotitube_backend_api.dao.ITrackDAO;
-import oose.dea.mikevanegmond.spotitube_backend_api.domain.Playlist;
 import oose.dea.mikevanegmond.spotitube_backend_api.domain.Track;
-import oose.dea.mikevanegmond.spotitube_backend_api.domain.User;
-import oose.dea.mikevanegmond.spotitube_backend_api.service.dto.PlaylistsDTO;
 import oose.dea.mikevanegmond.spotitube_backend_api.service.dto.TracksDTO;
 
 import javax.inject.Inject;

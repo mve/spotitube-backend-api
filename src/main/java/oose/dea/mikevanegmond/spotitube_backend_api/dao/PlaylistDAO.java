@@ -16,6 +16,11 @@ public class PlaylistDAO implements IPlaylistDAO {
     @Resource(name = "jdbc/spotitube")
     DataSource dataSource;
 
+    /**
+     * Get all playlists, set owner based on provided userId.
+     * @param userId
+     * @return ArrayList<Playlist>, all playlists.
+     */
     @Override
     public ArrayList<Playlist> getPlaylists(int userId) {
 
@@ -27,7 +32,6 @@ public class PlaylistDAO implements IPlaylistDAO {
             PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet resultSet = statement.executeQuery();
 
-            // TODO hoe test je de resultset?
             while (resultSet.next()) {
                 Playlist playlist = new Playlist();
                 playlist.setId(resultSet.getInt("id"));
@@ -44,28 +48,43 @@ public class PlaylistDAO implements IPlaylistDAO {
         return playlists;
     }
 
+    /**
+     * Create a new playlist.
+     * @param name
+     * @param ownerId
+     * @return boolean, true if successful, false if failed.
+     */
     @Override
-    public void createPlaylist(String name, int ownerId) {
-
+    public boolean createPlaylist(String name, int ownerId) {
         String sql = "INSERT INTO playlist (name, owner_id) VALUES (?, ?)";
+        boolean success = false;
 
         try (Connection connection = dataSource.getConnection()) {
 
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, name);
             statement.setInt(2, ownerId);
-            statement.executeUpdate();
+            success = statement.executeUpdate() > 0;
 
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
 
+        return success;
+
     }
 
+    /**
+     * Edit a playlist.
+     * @param name
+     * @param id
+     * @param ownerId
+     * @return boolean, true if successful, false if failed.
+     */
     @Override
-    public void editPlaylist(String name, int id, int ownerId) {
-
+    public boolean editPlaylist(String name, int id, int ownerId) {
         String sql = "UPDATE playlist SET name = ? WHERE id = ? AND owner_id = ?";
+        boolean success = false;
 
         try (Connection connection = dataSource.getConnection()) {
 
@@ -73,14 +92,20 @@ public class PlaylistDAO implements IPlaylistDAO {
             statement.setString(1, name);
             statement.setInt(2, id);
             statement.setInt(3, ownerId);
-            statement.executeUpdate();
 
+            success = statement.executeUpdate() > 0;
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
 
+        return success;
     }
 
+    /**
+     * Get the total duration of all tracks in the provided playlists.
+     * @param playlists
+     * @return int, total duration of all tracks in provided playlists.
+     */
     @Override
     public int getTotalDuration(ArrayList<Playlist> playlists) {
         int duration = 0;
@@ -104,20 +129,27 @@ public class PlaylistDAO implements IPlaylistDAO {
         return duration;
     }
 
+    /**
+     * Delete a playlist.
+     * @param id
+     * @return boolean, true if successful, false if failed.
+     */
     @Override
-    public void delete(int id) {
-
+    public boolean delete(int id) {
         String sql = "DELETE FROM playlist WHERE id = ?";
+        boolean success = false;
 
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, id);
-            statement.executeUpdate();
+
+            success = statement.executeUpdate() > 0;
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
-    }
 
+        return success;
+    }
 
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
