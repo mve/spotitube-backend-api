@@ -36,7 +36,7 @@ public class LoginResource {
 
         User user = userDAO.getUserByUsername(loginRequest.getUser());
 
-        if (user.getUsername() == null)
+        if (user == null)
         {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("Password & Username combination is incorrect.")

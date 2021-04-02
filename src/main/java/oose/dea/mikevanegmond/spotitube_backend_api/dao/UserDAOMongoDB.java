@@ -41,7 +41,7 @@ public class UserDAOMongoDB implements IUserDAO {
 
         if (!result.hasNext()) {
             // No user with that username found.
-            return user;
+            return null;
         }
 
         Document firstResult = (Document) result.next();
@@ -66,8 +66,8 @@ public class UserDAOMongoDB implements IUserDAO {
         MongoCursor result = collection.find(query).iterator();
 
         if (!result.hasNext()) {
-            // No user with that username found.
-            return user;
+            // No user with that token found.
+            return null;
         }
 
         Document firstResult = (Document) result.next();
