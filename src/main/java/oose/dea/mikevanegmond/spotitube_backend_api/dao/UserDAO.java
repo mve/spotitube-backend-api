@@ -4,12 +4,14 @@ import oose.dea.mikevanegmond.spotitube_backend_api.domain.User;
 import oose.dea.mikevanegmond.spotitube_backend_api.exceptions.InvalidTokenException;
 
 import javax.annotation.Resource;
+import javax.enterprise.inject.Alternative;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Alternative
 public class UserDAO implements IUserDAO {
 
     @Resource(name = "jdbc/spotitube")
